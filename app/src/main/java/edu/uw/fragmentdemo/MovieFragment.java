@@ -119,7 +119,7 @@ public class MovieFragment extends Fragment {
 
         protected ArrayList<Movie> doInBackground(String... params){
 
-            String movie = params[0];
+            String movie = params[0].trim();
 
             //construct the url for the omdbapi API
             String urlString = "";

@@ -38,7 +38,15 @@ public class MovieActivity extends AppCompatActivity implements MovieFragment.On
         FragmentManager manager = getFragmentManager();
 
         FragmentTransaction ft = manager.beginTransaction();
-        ft.add(R.id.container, new MovieFragment());
+
+
+        if(findViewById(R.id.container_right) != null) {
+            Log.v(TAG, "In landscape mode");
+            ft.add(R.id.container_right, new DetailFragment());
+            ft.add(R.id.container_left, new MovieFragment());
+        } else {
+            ft.add(R.id.container, new MovieFragment());
+        }
         ft.commit();
 
     }
@@ -46,6 +54,7 @@ public class MovieActivity extends AppCompatActivity implements MovieFragment.On
 
     @Override
     public void onMovieSelected(Movie movie) {
+
         DetailFragment detail = new DetailFragment();
 
         Bundle bundle = new Bundle();
@@ -54,12 +63,18 @@ public class MovieActivity extends AppCompatActivity implements MovieFragment.On
 
         detail.setArguments(bundle);
 
-        //swap the fragments
-        getFragmentManager().beginTransaction()
-                .replace(R.id.container, detail)
-                .addToBackStack(null)
-                .commit();
-
+        if (findViewById(R.id.container_right) != null) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container_right, detail)
+                    .addToBackStack(null)
+                    .commit();
+        } else {
+            //swap the fragments
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container, detail)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 
     //for support class Activity

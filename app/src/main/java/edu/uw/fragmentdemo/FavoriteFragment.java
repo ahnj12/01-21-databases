@@ -2,7 +2,9 @@ package edu.uw.fragmentdemo;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
+
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,11 +21,15 @@ import edu.uw.fragmentdemo.R;
 /**
  * Shows the list of favorite movies.
  */
-public class FavoriteFragment extends Fragment {
+public class FavoriteFragment extends DialogFragment {
 
     private static final String TAG = "FavoriteFragment";
 
     private SimpleCursorAdapter adapter; //adapter for list view
+
+    public static FavoriteFragment newInstance(){
+        return new FavoriteFragment();
+    }
 
 
     public FavoriteFragment() {
@@ -54,14 +60,20 @@ public class FavoriteFragment extends Fragment {
         //ArrayList<Movie> list = new ArrayList<Movie>();
 
         //controller
-        //adapter = new ArrayAdapter<Movie>(
-            //getActivity(), R.layout.list_item, R.id.txtItem, list);
 
-        String[] cols = new String[] {MovieDatabase.FavoriteEntry.COL_TITLE};
-        int[] ids = new int[] {R.id.txtItem};
+//        adapter = new ArrayAdapter<Movie>(
+//                getActivity(), R.layout.list_item, R.id.txtItem, list);
 
-        adapter = new SimpleCursorAdapter(getActivity(), R.layout.fragment_favorite,
-                MovieDatabase.queryDatabase(getActivity()), cols, ids, CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+        String[] cols = new String[]{MovieDatabase.FavoriteEntry.COL_TITLE};
+        int[] ids = new int[]{R.id.txtItem};
+
+        adapter = new SimpleCursorAdapter(
+          getActivity(),
+                R.layout.list_item,
+                MovieDatabase.queryDatabase(getActivity()),
+                cols, ids,
+                CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER
+        );
 
         //support ListView or GridView
         AdapterView listView = (AdapterView)rootView.findViewById(R.id.favoriteList);
@@ -78,7 +90,6 @@ public class FavoriteFragment extends Fragment {
                 ((MovieFragment.OnMovieSelectionListener)getActivity()).onMovieSelected(movie);
             }
         });
-
 
         return rootView;
     }

@@ -1,6 +1,12 @@
 package edu.uw.fragmentdemo;
 
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 /**
  * Class to manage a database to store movie info
@@ -21,6 +27,60 @@ public final class MovieDatabase {
     }
 
 
+    public static final String CREATE_FAVORITE_TABLE = "" +
+            "CREATE TABLE" + FavoriteEntry.TABLE_NAME + "(" +
+                FavoriteEntry._ID + "INTEGER PRIMARY KEY" + "," +
+                FavoriteEntry.COL_TITLE + " TEXT" + "," +
+                FavoriteEntry.COL_YEAR + " INTEGER" + "," +
+                FavoriteEntry.COL_IMDB_ID + " TEXT UNIQUE" + "," +
+                FavoriteEntry.COL_POSTER_URL + " TEXT" +
+            ")";
 
+    public static final String DROP_FAVORITE_TABLE = "DROP TABLE IF EXISTS " + FavoriteEntry.TABLE_NAME;
+
+    public static class Helper extends SQLiteOpenHelper {
+
+        public static final String DATABASE_NAME = "movies.db";
+        public static final int DATABASE_VERSION = 1;
+        public Helper(Context context) {
+            super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        }
+
+        @Override
+        public void onCreate(SQLiteDatabase db) {
+            db.execSQL(CREATE_FAVORITE_TABLE);
+        }
+
+        @Override
+        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            db.execSQL(DROP_FAVORITE_TABLE);
+            onCreate(db);
+        }
+
+    }
+
+    public static void testDatabase(Context context) {
+        Helper helper = new Helper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        ContentValues content = new ContentValues();
+        content.put(FavoriteEntry.COL_TITLE, "Batman");
+        content.put(FavoriteEntry.COL_YEAR, 1989);
+        content.put(FavoriteEntry.COL_IMDB_ID, "1111");
+        content.put(FavoriteEntry.COL_POSTER_URL, "");
+
+        long newRowID = db.insert(FavoriteEntry.TABLE_NAME, null, content);
+        Log.v("DB", "" + newRowID);
+    }
+
+    public static Cursor queryDatabase(Context context) {
+        Helper helper = new Helper(context);
+        SQLiteDatabase db = helper.getWritableDatabase();
+
+        String[] cols = new String[] {FavoriteEntry._ID, FavoriteEntry.COL_TITLE, FavoriteEntry.COL_YEAR, FavoriteEntry.COL_IMDB_ID, FavoriteEntry.COL_POSTER_URL};
+
+        Cursor results = db.query(FavoriteEntry.TABLE_NAME, cols, null, null, null, null, null, null);
+        return results;
+    }
 
 }
